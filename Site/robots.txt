@@ -1,0 +1,16 @@
+User-Agent: *
+Disallow: /tilda/form*
+Disallow: /tilda/rec*
+Disallow: /tilda/click*
+Disallow: /tilda/scroll*
+Disallow: /tilda/popup*
+Disallow: /tilda/cart*
+Disallow: /tilda/product*
+Disallow: /tilda/event*
+Disallow: /members/login*
+Disallow: /members/signup*
+Disallow:
+
+
+Sitemap: http://xn----7sbbadhknpm2cgfcdxg.xn--p1ai/sitemap.xml
+Sitemap: http://xn----7sbbadhknpm2cgfcdxg.xn--p1ai/sitemap-feeds.xml

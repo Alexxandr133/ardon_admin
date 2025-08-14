@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex; /* Для размещения меню и контента */
+        }
+        .admin-container {
+            max-width: 900px;
+            margin: 10px auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 100px;
+            position: relative;
+            margin-left: 20%; /* Отступ для меню */
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 2.5em;
+            color: #333;
+            font-weight: bold;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 24px;
+            color: #007bff;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: #007bff;
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+            font-size: 1em;
+        }
+        input[type="text"]:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        input[type="file"] {
+            margin-top: 8px;
+        }
+        .staff-list {
+            margin-top: 24px;
+        }
+        .staff-card {
+            display: flex;
+            align-items: center;
+            background: #f9fafb;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .staff-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .staff-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            background: #e0e0e0;
+        }
+        .staff-info {
+            flex: 1;
+        }
+
+        .btn {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease; /* Изменил на 'all' для плавности всех изменений */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Добавил для глубины */
+            outline: none; /* Убирает контур при фокусе (лучше добавить :focus стили) */
+        }
+
+        .btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px); /* Лёгкий подъём при наведении */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Усиленная тень при наведении */
+        }
+
+        .btn:active {
+            transform: translateY(0); /* Возврат при нажатии */
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); /* Уменьшенная тень */
+        }
+
+        .return-btn-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4a6cf7;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(74, 108, 247, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            margin-top: 24px;
+        }
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+        /* Стиль для уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4caf50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            font-size: 1em;
+            animation: fadeOut 3s ease-in-out forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        /* Левое меню */
+        .sidebar {
+            width: 250px;
+            background: #ffffff;
+            border-right: 1px solid #e0e0e0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+        }
+        .sidebar h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #007bff;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+        .sidebar a {
+            display: block;
+            padding: 10px 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer; /* Включаем указатель */
+            transition: all 0.3s ease; /* Добавляем плавные переходы */
+        }
+
+        .sidebar a:hover {
+            background: #e5e7eb; /* Изменяем цвет при наведении */
+            transform: translateY(-2px); /* Добавляем легкий подъем */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень при наведении */
+        }
+
+        .sidebar a.active {
+            transform: translateY(0); /* Возвращаем на место при нажатии */
+            background: #007bff;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Левое меню -->
+    <div class="sidebar">
+        <h2>Страницы</h2>
+        <ul>
+            <li><a href="#" data-page="main" class="active">Главная</a></li>
+            <li><a href="adminStaff_homekrasnogor.html" data-page="staff">Педагогический состав</a></li>
+            <li><a href="adminNews_homekrasnogor.html" data-page="news">Поток новостей</a></li>
+        </ul>
+    </div>
+
+    <!-- Уведомление -->
+    <div id="notification" class="notification">Изменения успешно сохранены!</div>
+
+    <!-- Основной контент -->
+    <div class="admin-container">
+        <div class="return-btn-container">
+            <a href="../homekrasnogor.html" class="btn btn-secondary">
+                ← Вернуться на главную
+            </a>
+        </div>
+        <h1 style="display: flex; flex-direction: column; gap: 4px;">
+            <span>Контент страницы</span>
+            <span>"Главная"</span>
+        </h1>
+        <form id="director-form" action="/update_director" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="pageHtml" value="homekrasnogor">
+            <div class="section">
+                <div class="section-title">Обращение заведующей</div>
+                <div class="form-group">
+                    <label for="director-greeting">Текст обращения</label>
+                    <textarea id="director-greeting" name="director-greeting" rows="5" placeholder="Введите обращение заведующей..."></textarea>
+                </div>
+                <div class="form-group" style="display:flex; gap:16px; align-items:center;">
+                    <label for="director-name" style="display: inline-block; text-align: center; flex: 1;">
+                        <span style="display: block;">ФИО</span>
+                        <span style="display: block;">заведующей</span>
+                    </label>
+                    <input type="text" id="director-name" name="director-name" placeholder="Введите ФИО заведующей">
+                </div>
+                <div class="form-group">
+                    <label for="director-photo">Фотография заведующей</label>
+                    <img id="director-photo-preview" src="../images/tild3037-3766-4332-b264-386331376532__noroot.png" alt="Фото заведующей" style="display:block;width:120px;height:120px;object-fit:cover;border-radius:8px;margin-bottom:12px;background:#e0e0e0;">
+                    <input type="file" id="director-photo" name="director-photo" accept="image/*">
+                    <div style="font-size:0.9em;color:#888;margin-top:8px;">Загрузите новое фото, чтобы заменить текущее.</div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">Педагогический состав</div>
+                <div class="staff-list" id="staff-list">
+                    <!-- Преподаватель 1 -->
+                    <div class="staff-card">
+                        <img id="staff-photo-1-preview" src="" class="staff-photo" alt="Фото сотрудника 1">
+                        <div class="staff-info">
+                            <input type="file" id="staff-photo-1" name="staff-photo-1" accept="image/*">
+                            <input type="text" id="staff-name-1" name="staff-name-1" placeholder="ФИО" style="margin-top:8px;">
+                            <input type="text" id="staff-desc-1" name="staff-desc-1" placeholder="Описание" style="margin-top:8px;">
+                        </div>
+                    </div>
+                    <!-- Преподаватель 2 -->
+                    <div class="staff-card">
+                        <img id="staff-photo-2-preview" src="" class="staff-photo" alt="Фото сотрудника 2">
+                        <div class="staff-info">
+                            <input type="file" id="staff-photo-2" name="staff-photo-2" accept="image/*">
+                            <input type="text" id="staff-name-2" name="staff-name-2" placeholder="ФИО" style="margin-top:8px;">
+                            <input type="text" id="staff-desc-2" name="staff-desc-2" placeholder="Описание" style="margin-top:8px;">
+                        </div>
+                    </div>
+                    <!-- Преподаватель 3 -->
+                    <div class="staff-card">
+                        <img id="staff-photo-3-preview" src="" class="staff-photo" alt="Фото сотрудника 3">
+                        <div class="staff-info">
+                            <input type="file" id="staff-photo-3" name="staff-photo-3" accept="image/*">
+                            <input type="text" id="staff-name-3" name="staff-name-3" placeholder="ФИО" style="margin-top:8px;">
+                            <input type="text" id="staff-desc-3" name="staff-desc-3" placeholder="Описание" style="margin-top:8px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn">Сохранить изменения</button>
+        </form>
+    </div>
+</body>
+</html>
+<script>
+// Предпросмотр фотографии директора
+const photoInput = document.getElementById('director-photo');
+const photoPreview = document.getElementById('director-photo-preview');
+photoInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            photoPreview.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        photoPreview.src = '../images/tild3037-3766-4332-b264-386331376532__noroot.png';
+    }
+});
+
+// Автоматически подставлять текущее имя директора через fetch
+//console.log("Запуск /api/director_name...");
+fetch(`/api/director_name?page=${encodeURIComponent('homekrasnogor')}`)
+  .then(r => {
+    //console.log("Статус ответа /api/director_name: ", r.status);
+    return r.ok ? r.text() : ''
+  })
+  .then(name => { if (name) document.getElementById('director-name').value = name; });
+
+// Автоматически подставлять обращение директора через fetch
+//console.log("Запуск /api/director_greeting...");
+fetch(`/api/director_greeting?page=${encodeURIComponent('homekrasnogor')}`)
+  .then(r => { 
+    //console.log("Статус ответа /api/director_greeting: ", r.status);
+    return r.ok ? r.text() : '';
+  })
+  .then(greeting => { if (greeting) document.getElementById('director-greeting').value = greeting; });
+
+  // Автозаполнение данных преподавателей
+//console.log("Запуск /api/staff...");
+fetch(`/api/staff?page=${encodeURIComponent('homekrasnogor')}`)
+  .then(r => {
+    //console.log("Статус ответа /api/staff: ", r.status);
+    return r.ok ? r.json() : [];
+  })
+  .then(staffs => {
+    //console.log("Данные получены: ", staffs);
+    staffs.forEach((s, i) => {
+      const idx = i + 1;
+      document.getElementById('staff-name-' + idx).value = s.name;
+      document.getElementById('staff-desc-' + idx).value = s.desc;
+      document.getElementById('staff-photo-' + idx + '-preview').src = s.photo;
+    });
+  })
+  .catch(error => {
+    console.error("Ошибка /api/staff: ", error); 
+  });
+
+// Предпросмотр фото преподавателей (Срабатывает только для отображения выбранного фото)
+[1,2,3].forEach(idx => {
+  const input = document.getElementById('staff-photo-' + idx);
+  const preview = document.getElementById('staff-photo-' + idx + '-preview');
+  input.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(ev) { preview.src = ev.target.result; };
+      reader.readAsDataURL(file);
+    }
+  });
+});
+
+// Отправка формы через AJAX
+document.getElementById('director-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Предотвращаем отправку формы
+    const formData = new FormData(this);
+    // Отправляем данные на сервер через AJAX
+    fetch('/update_director', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(message => {
+        // Показываем уведомление
+        const notification = document.getElementById('notification');
+        notification.style.display = 'block';
+        // Через 3 секунды скрываем уведомление
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 3000);
+    })
+    .catch(error => {
+        console.error('Ошибка: ', error);
+        alert('Произошла ошибка при сохранении изменений.');
+    });
+});
+
+</script>
